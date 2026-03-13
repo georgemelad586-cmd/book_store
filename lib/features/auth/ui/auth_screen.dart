@@ -1,6 +1,8 @@
-
+import 'package:bookstore/core/custom_back_botton.dart';
+import 'package:bookstore/core/thems/app_colors.dart';
 import 'package:bookstore/core/widgets/app_buttom.dart';
 import 'package:bookstore/core/widgets/text_form_field_button.dart';
+import 'package:dio/dio.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:bookstore/generated/locale_keys.g.dart';
@@ -8,8 +10,25 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../gen/assets.gen.dart';
 
-class AuthScreen extends StatelessWidget {
+class AuthScreen extends StatefulWidget {
   const AuthScreen({super.key});
+
+  @override
+  State<AuthScreen> createState() => _AuthScreenState();
+}
+
+class _AuthScreenState extends State<AuthScreen> {
+   var emailController = TextEditingController();
+  var passwordController = TextEditingController();
+  @override
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+
+  bool isObscure = true;
 
   @override
   Widget build(BuildContext context) {
@@ -18,17 +37,7 @@ class AuthScreen extends StatelessWidget {
       body: ListView(
         padding: EdgeInsets.all(16.r),
         children: [
-          Row(
-            children: [
-              IconButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                icon: const Icon(Icons.arrow_back),
-              ),
-            ],
-          ),
-
+          const CustomBackBotton(),
           SizedBox(height: 20.h),
           Text(
             LocaleKeys.welcomeBack.tr(),
@@ -37,22 +46,27 @@ class AuthScreen extends StatelessWidget {
               color: Colors.black,
             ),
           ),
-
           SizedBox(height: 20.h),
-
           TextFormFieldButton(
+          controller: emailController,
             hintText: LocaleKeys.name.tr(),
           ),
-
           SizedBox(height: 20.h),
-
           TextFormFieldButton(
+            controller: passwordController,
             hintText: LocaleKeys.password.tr(),
-            suffixIcon: const Icon(Icons.remove_red_eye),
+            isPassword: true,
+            isObscure: isObscure,
+            suffixIcon: InkWell(
+                onTap: () {
+                  setState(() {
+                    isObscure = !isObscure;
+                  });
+                },
+                child: Icon(
+                    isObscure ? Icons.visibility_off : Icons.visibility)),
           ),
-
           SizedBox(height: 20.h),
-
           Align(
             alignment: Alignment.centerRight,
             child: TextButton(
@@ -60,19 +74,19 @@ class AuthScreen extends StatelessWidget {
               child: Text(
                 LocaleKeys.forgetPassword.tr(),
                 style: TextStyle(
-                  color: const Color(0xff6A707C),
+                  color: AppColors.textColor,
                   fontSize: 15.sp,
                 ),
               ),
             ),
           ),
-
           SizedBox(height: 30.h),
-
-          AppButtom(),
-
+           AppButtom(
+            onTap: ()async{
+            await  login();
+            },
+          ),
           SizedBox(height: 10.h),
-
           Center(
             child: Text(
               "or",
@@ -82,12 +96,10 @@ class AuthScreen extends StatelessWidget {
               ),
             ),
           ),
-
           SizedBox(height: 30.h),
-
-          Container(width: double.infinity,
+          Container(
+              width: double.infinity,
               child: Center(child: Assets.icons.google.image())),
-
           SizedBox(height: 30.h),
           Container(
             width: double.infinity,
@@ -95,9 +107,7 @@ class AuthScreen extends StatelessWidget {
               child: Assets.icons.apple.image(),
             ),
           ),
-
           SizedBox(height: 50.h),
-
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -124,4 +134,21 @@ class AuthScreen extends StatelessWidget {
       ),
     );
   }
+
+
+   login() async {
+     Dio dio = Dio();
+     final response = await dio.post(
+       'https://codingarabic.online/api/login',
+       data: {
+         "email": emailController.text,
+         "password": passwordController.text,
+       },
+     );
+     print(response.statusCode.toString());
+   }
+
+
+
+
 }

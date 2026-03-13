@@ -20,15 +20,18 @@ class BookStore extends StatelessWidget {
         localizationsDelegates: context.localizationDelegates,
         supportedLocales: context.supportedLocales,
         locale: context.locale,
-         theme: ThemeData(fontFamily: "DM"),
+        theme: ThemeData(fontFamily: "DM"),
         initialRoute: '/welcome_screen',
         routes: {
           '/welcome_screen': (context) => const WelcomeScreen(),
           '/auth_screen': (context) => const AuthScreen(),
           '/register_screen': (context) => const RegisterScreen(),
         },
-         home: WelcomeScreen(),
+        home: WelcomeScreen(),
       ),
     );
   }
+
+
+
 }
