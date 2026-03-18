@@ -1,6 +1,4 @@
-
-
-
+import 'package:bookstore/core/routes/app_route.dart';
 import 'package:bookstore/core/widgets/app_buttom.dart';
 import 'package:bookstore/generated/locale_keys.g.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -22,7 +20,6 @@ class WelcomeScreen extends StatelessWidget {
           image: DecorationImage(image: Image.asset(Assets.welcomeBackground.path).image, fit: BoxFit.cover)
         ),
         child: Column(
-
           children: [
             SizedBox(height: 15.h,),
             Row(
@@ -33,8 +30,7 @@ class WelcomeScreen extends StatelessWidget {
                   }else{
                     context.setLocale(Locale('en'));
                   }
-
-                }, icon: Icon(Icons.language)),
+                }, icon: const Icon(Icons.language)),
               ],
             ),
             SizedBox(height: 105.h,),
@@ -44,32 +40,27 @@ class WelcomeScreen extends StatelessWidget {
                child: Text(LocaleKeys.orderNow.tr(),
                style: TextStyle(
                  fontSize: 20.sp,
-
                ),
                ),
              ),
             AppButtom(
-            onTap: (){
-
-                Navigator.pushNamed(context, '/auth_screen');
-
-            },
+              text: LocaleKeys.login.tr(),
+              onTap: (){
+                Navigator.pushNamed(context, AppRoute.login);
+              },
             ),
             SizedBox(height: 15.h,),
             AppButtom(
               onTap: (){
-                Navigator.pushNamed(context, '/register_screen');
+                Navigator.pushNamed(context, AppRoute.register);
               },
               backgroundColor: Colors.white,
-              text:LocaleKeys.register.tr(),
+              text: LocaleKeys.register.tr(),
             ),
             SizedBox(height: 94.h,),
-
-
           ],
         ),
       ),
-
     );
   }
 }

@@ -3,6 +3,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'core/routes/app_route.dart';
 import 'features/welcome/ui/welcome_screen.dart';
 import 'package:bookstore/features/auth/ui/auth_screen.dart';
 import 'package:bookstore/features/register/ui/register_screen.dart';
@@ -21,12 +22,7 @@ class BookStore extends StatelessWidget {
         supportedLocales: context.supportedLocales,
         locale: context.locale,
         theme: ThemeData(fontFamily: "DM"),
-        initialRoute: '/welcome_screen',
-        routes: {
-          '/welcome_screen': (context) => const WelcomeScreen(),
-          '/auth_screen': (context) => const AuthScreen(),
-          '/register_screen': (context) => const RegisterScreen(),
-        },
+             onGenerateRoute: AppRoute().onGenerateRoute,
         home: WelcomeScreen(),
       ),
     );

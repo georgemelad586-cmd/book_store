@@ -1,0 +1,20 @@
+import 'package:dio/dio.dart';
+
+class AuthRepo {
+  static Dio dio = Dio();
+
+  static Future<bool> login({required String email, required String password}) async {
+    try {
+      final response = await dio.post(
+        'https://codingarabic.online/api/login',
+        data: {
+          "email": email,
+          "password": password,
+        },
+      );
+      return response.statusCode == 200;
+    } catch (e) {
+      return false;
+    }
+  }
+}

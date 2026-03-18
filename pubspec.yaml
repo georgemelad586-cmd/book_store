@@ -38,6 +38,7 @@ dependencies:
   easy_localization: ^3.0.8
   flutter_gen: any
   dio: ^5.9.2
+  flutter_bloc: ^9.1.1
 
 dev_dependencies:
   flutter_test:

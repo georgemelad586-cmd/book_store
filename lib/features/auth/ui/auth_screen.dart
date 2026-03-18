@@ -2,12 +2,14 @@ import 'package:bookstore/core/custom_back_botton.dart';
 import 'package:bookstore/core/thems/app_colors.dart';
 import 'package:bookstore/core/widgets/app_buttom.dart';
 import 'package:bookstore/core/widgets/text_form_field_button.dart';
-import 'package:dio/dio.dart';
+import 'package:bookstore/features/auth/cubit/auth_cubit.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:bookstore/generated/locale_keys.g.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../core/routes/routes.dart';
 import '../../../gen/assets.gen.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -18,17 +20,16 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
-   var emailController = TextEditingController();
-  var passwordController = TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  bool isObscure = true;
+
   @override
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
   }
-
-
-  bool isObscure = true;
 
   @override
   Widget build(BuildContext context) {
@@ -48,8 +49,8 @@ class _AuthScreenState extends State<AuthScreen> {
           ),
           SizedBox(height: 20.h),
           TextFormFieldButton(
-          controller: emailController,
-            hintText: LocaleKeys.name.tr(),
+            controller: emailController,
+            hintText: LocaleKeys.email.tr(),
           ),
           SizedBox(height: 20.h),
           TextFormFieldButton(
@@ -81,10 +82,39 @@ class _AuthScreenState extends State<AuthScreen> {
             ),
           ),
           SizedBox(height: 30.h),
-           AppButtom(
-            onTap: ()async{
-            await  login();
+          BlocListener<AuthCubit, AuthState>(
+            listener: (context, state) {
+              if (state is AuthLoadingState) {
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (context) => const Center(
+                    child: CircularProgressIndicator(color: Colors.black),
+                  ),
+                );
+              } else if (state is AuthErrorState) {
+                Navigator.pop(context); // Close loading
+                showDialog(
+                  context: context,
+                  builder: (context) => const AlertDialog(
+                    title: Text("Error"),
+                    content: Text("Invalid email or password"),
+                  ),
+                );
+              } else if (state is AuthSuccessState) {
+                Navigator.pop(context); // Close loading
+                Navigator.pushNamedAndRemoveUntil(
+                    context, Routes.bottomNavBar, (route) => false);
+              }
             },
+            child: AppButtom(
+              text: LocaleKeys.login.tr(),
+              onTap: () {
+                context.read<AuthCubit>().login(
+                    email: emailController.text,
+                    password: passwordController.text);
+              },
+            ),
           ),
           SizedBox(height: 10.h),
           Center(
@@ -97,11 +127,11 @@ class _AuthScreenState extends State<AuthScreen> {
             ),
           ),
           SizedBox(height: 30.h),
-          Container(
+          SizedBox(
               width: double.infinity,
               child: Center(child: Assets.icons.google.image())),
           SizedBox(height: 30.h),
-          Container(
+          SizedBox(
             width: double.infinity,
             child: Center(
               child: Assets.icons.apple.image(),
@@ -119,7 +149,9 @@ class _AuthScreenState extends State<AuthScreen> {
                 ),
               ),
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pushNamed(context, Routes.register);
+                },
                 child: Text(
                   LocaleKeys.register_now.tr(),
                   style: TextStyle(
@@ -134,21 +166,4 @@ class _AuthScreenState extends State<AuthScreen> {
       ),
     );
   }
-
-
-   login() async {
-     Dio dio = Dio();
-     final response = await dio.post(
-       'https://codingarabic.online/api/login',
-       data: {
-         "email": emailController.text,
-         "password": passwordController.text,
-       },
-     );
-     print(response.statusCode.toString());
-   }
-
-
-
-
 }
